@@ -1,0 +1,65 @@
+/* App.scss */
+.App {
+  text-align: center;
+}
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+.App-title {
+  font-size: 1.5em;
+}
+.App-intro {
+  font-size: large;
+}
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+$milk-white: #bdc3c7;
+$grass-green: rgb(66,155,19);
+.App-header {
+  background-color: $grass-green;
+  height: 150px;
+  padding: 20px;
+  color: $milk-white;
+}
+
+.navbar {
+ min-height: 80px;
+}
+
+.tpgLink {
+  color: black;
+}
+
+.navbar-custom {
+  background-color: #0f1568;
+}
+/* change the brand and text color */
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+  color: rgba(255,255,255,.8);
+}
+/* change the link color */
+.navbar-custom .navbar-nav .nav-link {
+  color: rgba(255,255,255,.5);
+}
+/* change the color of active or hovered links */
+.navbar-custom .nav-item.active .nav-link,
+.navbar-custom .nav-item:hover .nav-link {
+  color: #ffffff;
+}
+
+.btn-outline {
+  color: #00ffc6; }
+
+.btn-outline:hover {
+  color: #00ffc6; }
