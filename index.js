@@ -280,25 +280,22 @@ axios.defaults.baseURL = 'https://thepointsguy.com';
 
 //cloud functions
 async function test () {
-  const completed =""
+  let completed =""
     await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/guide").then(async res => {
-       completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts")
+       completed = true
     })
     //const completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts") 
     return (completed)
 }
 
 exports.crawl = async(req, res) => {
-   // return getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts") 
   res.set('Access-Control-Allow-Origin', "*")
   res.set('Access-Control-Allow-Methods', 'GET, POST')
-  const completed = ""; 
-
+  let completed =""
   await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/guide").then(async res => {
-    completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts")
- })
-
-    return res.status(200).send(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+     completed = true
+  })
+  //const completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts") 
+  return res.status(200).send(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
  }
 
-//test()

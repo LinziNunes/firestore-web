@@ -3,20 +3,10 @@ import logo from './logo.png';
 import './App.css';
 import Table from './components/Table'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import db from '/components/fire';
-
 
 class App extends React.Component {
 
-  componentDidMount() {
-    const { requestData } = this.props;
-    requestData();
-  }
-
   render() {  
-    const { result } = this.props;
-    if (result && result.fetched) {
-      const { fetching, error, successPayload } = result;
   return (
     <div className="App" >
     <Router>
@@ -49,45 +39,6 @@ class App extends React.Component {
 }
 
 }
-}
-
-const enhance = connect(
-  state => ({
-    result: api.selectors.getResult(state, CACHE_KEY),
-  }),
-  dispatch => ({
-    requestData() {
-      return dispatch(
-        api.actions.invoke({
-          method: 'GET',
-          headers: {
-            Accept: 'application/json; charset=utf-8',
-            'x-api-Key': process.env.REACT_APP_API_KEY,
-          },
-          endpoint: 'https://newsapi.org/v2/top-headlines?sources=hacker-news',
-          cache: {
-            key: CACHE_KEY,
-            strategy: api.cache
-              .get(api.constants.CACHE_TYPES.TTL_SUCCESS)
-              .buildStrategy({ ttl: 600000 }), // 10 minutes
-          },
-        })
-      );
-    },
-  })
-);
-
-App.propTypes = {
-  result: PropTypes.shape({
-    fetching: PropTypes.bool.isRequired,
-    fetched: PropTypes.bool.isRequired,
-    error: PropTypes.bool.isRequired,
-    timestamp: PropTypes.number,
-    successPayload: PropTypes.any,
-    errorPayload: PropTypes.any,
-  }),
-  requestData: PropTypes.func.isRequired,
-};
 
 
-export default enhance(App);
+export default App;

@@ -56,20 +56,20 @@ state = {
         console.log(this.state.table)
         console.log(this.props.value)
 
-        // this.state.table.get().then((snapshot) => {
-        //   snapshot.forEach((doc) => {
-        //       let row = doc.data().obj;
-        //       row.key = doc.id
-        //       rows.push(row) 
-        
-        //     })
-        //   })
-        //   .then(res => {
-        //     console.log(rows);
-        //     state.rows = rows
-        //     state.loading = false
-        //     this.setState(state)
-        //   });
+    this.state.table.get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+          let row = doc.data().obj;
+          row.key = doc.id
+          rows.push(row) 
+    
+        })
+      })
+      .then(res => {
+        console.log(rows);
+        state.rows = rows
+        state.loading = false
+        this.setState(state)
+      });
 
       }
       this.state.updateTable
@@ -140,7 +140,8 @@ state = {
        //await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/crawl-firestore-guide')
 
     })
-    .then(resp => {
+    .then(async resp => {
+      await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/crawl-firestore-guide')
       //state.resp = resp.status;
       state.running = false;
       this.setState(state)
