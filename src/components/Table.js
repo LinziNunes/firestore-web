@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import db from './fire';
+//import {db, getMessages} from './fire';
 import matchSorter from 'match-sorter'
 import Loader from 'react-loader-spinner'
 // Import React Table
@@ -8,15 +8,17 @@ import "react-table/react-table.css";
 import {CSVLink} from "react-csv";
 import axios from 'axios'
 
+import {db, getMessages} from './fire';
 
 var he = require('he');
+
 
 export default class Table extends Component {
 
 state = {
     pagination: 21,
-    table: db.collection(this.props.value),
-    rows: {},
+    table: db.collection(this.props.value).limit(20),
+    rows: [],
     timeRow: {},
     count:0,
     loading: true,
@@ -25,7 +27,8 @@ state = {
     running: false,
     lastUpdated : undefined,
     tableRows :{},
-    updateTable: db.collection('updated')
+    updateTable: db.collection('updated'),
+    last : undefined
     }
 
     
@@ -44,79 +47,35 @@ state = {
 
         state.lastUpdated = lastUpdate
         state.loading = false;
-        console.log(this.state.rows)
         console.log(this.state.lastUpdated)            
       })
 
     state.loading = true
-    this.setState(state)
-    console.log("I ran 1")
-      if (this.state.running === false) {
-        let rows = [];
-        console.log(this.state.table)
-        console.log(this.props.value)
-
-    this.state.table.get().then((snapshot) => {
-      snapshot.forEach((doc) => {
-          let row = doc.data().obj;
-          row.key = doc.id
-          rows.push(row) 
-    
-        })
-      })
-      .then(res => {
-        console.log(rows);
-        state.rows = rows
-        state.loading = false
-        this.setState(state)
-      });
-
-      }
-      this.state.updateTable
-      .onSnapshot(querySnapshot => {
-      querySnapshot.docChanges().forEach(change => {
-        if (change.type === 'added' || change.type === 'modified' ) {
-          this.state.lastUpdated = change.doc.data();
-          tableRows.push(change.doc.data().obj.time)
-        }
-        tableRows = tableRows.sort(this.sortDatesDesc)
+      
+    this.readQueryBatch(0)
   
-        })
-        if (tableRows.length > 0) {
-          this.state.lastUpdated = tableRows[0]
-        }
-      })
-              this.setState(state)
-
-
   }
 
+  componentDidMount(){
+    //listen for updates
+    let tableRows = []
+    this.state.updateTable
+    .onSnapshot(querySnapshot => {
+    querySnapshot.docChanges().forEach(change => {
+      if (change.type === 'added' || change.type === 'modified' ) {
+        this.state.lastUpdated = change.doc.data();
+        tableRows.push(change.doc.data().obj.time)
+      }
+      tableRows = tableRows.sort(this.sortDatesDesc)
 
-  componentDidMount() {
-    this.state.loading = false;
-
-    let count = 0;
-    let rows = []
-    this.state.updateTable.get().then((snapshot) => {
-        snapshot.forEach(doc => {
-          rows.push ( doc.data().obj.time)
-          count ++;
-          })
-      }).then(res => {
-        rows = rows.sort(this.sortDatesDesc)
-        this.state.lastUpdated = rows[0]
-        //this.setState ({lastUpdated:rows[0]})
       })
-
-
+      if (tableRows.length > 0) {
+        this.state.lastUpdated = tableRows[0]
+      }
+    })
   }
-
 
   sortDatesDesc = (date1, date2) => {
-      // if (date1 > date2) return -1;
-      // if (date1 < date2) return 1;
-      // return 0;
-      //return date1.localeCompare(date2);
       var dateA = new Date(date1).getTime();
       var dateB = new Date(date2).getTime();
       return dateB > dateA ? 1 : -1; 
@@ -137,22 +96,52 @@ state = {
     await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/function-1 ').then(async resp => {
       this.setState()
        await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/crawl-firestore')
-       //await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/crawl-firestore-guide')
 
     })
     .then(async resp => {
       await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/crawl-firestore-guide')
-      //state.resp = resp.status;
       state.running = false;
       this.setState(state)
       }
     )
   }
 
-getTable = () => {
-  const { data, rows } = this.state;
+  async readQueryBatch(startpoint, resolve, reject) {
+    let collectionRef = db.collection(this.props.value)
+    let query = collectionRef.orderBy('__name__').limit(2000);
+    let rows = this.state.rows
+    let more = []
+    let length = undefined
+    if (startpoint > 0) {
+        query = query.startAfter(this.state.last)
+    }
+    const snapshot = await query.get();
+    length = snapshot.docs.length;
+    this.state.last = snapshot.docs[snapshot.docs.length - 1];
+
+    snapshot.forEach((doc) => {
+      let row = doc.data().obj;
+      row.key = doc.id;
+      more.push(row);
+    });
+    if (length == 0) {
+      return;
+    }
+    const res = rows;
+    startpoint += 500;
+    console.log(startpoint);
+    process.nextTick(() => {
+      this.readQueryBatch(startpoint, resolve, reject);
+    });
+    rows = rows.concat(more)
+    this.setState({ rows: rows });    
+  }
+
+ getTable () {
+
+    const {rows} = this.state
     return(
-      
+
       <div>    
         <div className="btn-group btn-group-sm"  class="text-right">
           <button className="btn btn-light btn-sm align-left">
@@ -266,7 +255,7 @@ render() {
   }
 
 }
-  if (Object.keys(this.state.rows).length === 0 && loading) {
+  if ((typeof(this.state.rows) == "undefined") || Object.keys(this.state.rows).length === 0 && loading) {
     return(
 
        <Loader
