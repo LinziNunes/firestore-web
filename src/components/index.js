@@ -280,9 +280,9 @@ axios.defaults.baseURL = 'https://thepointsguy.com';
 
 //cloud functions
 async function test () {
-  const completed =""
-    await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts").then(async res => {
-       completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts")
+  let completed =""
+    await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/guide").then(async res => {
+       completed = true
     })
     //const completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts") 
     return (completed)

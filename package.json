@@ -15,6 +15,7 @@
     "font-awesome": "^4.7.0",
     "fs": "0.0.1-security",
     "http2": "^3.3.7",
+    "local-storage": "^2.0.0",
     "match-sorter": "^3.1.1",
     "namor": "^1.1.2",
     "npm-run-all": "^4.1.5",

@@ -9,6 +9,7 @@ import {CSVLink} from "react-csv";
 import axios from 'axios'
 
 import {db, getMessages} from './fire';
+import ls from 'local-storage'
 
 var he = require('he');
 
@@ -134,7 +135,17 @@ state = {
       this.readQueryBatch(startpoint, resolve, reject);
     });
     rows = rows.concat(more)
-    this.setState({ rows: rows });    
+
+    if (this.props.value === "cards") {
+      if (ls.get('cards').length === 0) {
+        ls.set('cards', rows)
+      }
+      console.log(ls.get('cards'))
+      this.setState({ rows: ls.get('cards') });    
+    }
+    else {
+      this.setState({ rows: rows });  
+    }
   }
 
  getTable () {
