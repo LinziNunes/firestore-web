@@ -137,7 +137,7 @@ state = {
     rows = rows.concat(more)
 
     if (this.props.value === "cards") {
-      if (ls.get('cards').length === 0) {
+      if (ls.get('cards') === undefined || ls.get('cards').length === 0) {
         ls.set('cards', rows)
       }
       console.log(ls.get('cards'))
