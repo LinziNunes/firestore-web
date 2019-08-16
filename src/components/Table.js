@@ -29,7 +29,7 @@ state = {
     lastUpdated : undefined,
     tableRows :{},
     updateTable: db.collection('updated'),
-    last : undefined
+    last : undefined, 
     }
 
     
@@ -76,6 +76,10 @@ state = {
     })
   }
 
+  componentWillUnmount() {
+    ls.set('hasCodeRanBefore', true)
+  }
+
   sortDatesDesc = (date1, date2) => {
       var dateA = new Date(date1).getTime();
       var dateB = new Date(date2).getTime();
@@ -96,6 +100,8 @@ state = {
 
     await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/function-1 ').then(async resp => {
       this.setState()
+      ls.set('hasCodeRanBefore', undefined)
+
        await axios.get('https://us-central1-expanded-system-245021.cloudfunctions.net/crawl-firestore')
 
     })
@@ -135,9 +141,9 @@ state = {
       this.readQueryBatch(startpoint, resolve, reject);
     });
     rows = rows.concat(more)
-
+    console.log(ls.get('hasCodeRanBefore') )
     if (this.props.value === "cards") {
-      if (ls.get('cards') === undefined || ls.get('cards').length === 0) {
+      if (ls.get('hasCodeRanBefore') === null ) {
         ls.set('cards', rows)
       }
       console.log(ls.get('cards'))

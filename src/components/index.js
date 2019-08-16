@@ -262,7 +262,7 @@ axios.defaults.baseURL = 'https://thepointsguy.com';
 
 
     
-    await Promise.map(
+    return await Promise.map(
       pagesToFetch,
       async (page, inx) => {
         console.log(`${endpoint}: ${inx + 2} of ${maxToFetch}`);
@@ -281,21 +281,23 @@ axios.defaults.baseURL = 'https://thepointsguy.com';
 //cloud functions
 async function test () {
   let completed =""
-    await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/guide").then(async res => {
-       completed = true
-    })
-    //const completed = await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/posts") 
-    return (completed)
+  let endpoints = [  "https://thepointsguy.com/wp-json/wp/v2/guide"]
+  await Promise.map(endpoints, async(endpoint, inx) => {
+    await getListOfEntities(endpoint)
+  })
+  console.log('completed')
+    return ("completed")
 }
 
 exports.crawl = async(req, res) => {
   res.set('Access-Control-Allow-Origin', "*")
   res.set('Access-Control-Allow-Methods', 'GET, POST')
-  const completed = ""; 
-
-  await getListOfEntities("https://thepointsguy.com/wp-json/wp/v2/guide")
-
-    return res.status(200).send(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+  let completed =""
+  let endpoints = ["https://thepointsguy.com/wp-json/wp/v2/posts", 
+                    "https://thepointsguy.com/wp-json/wp/v2/guide"]
+  await Promise.map(endpoints, async(endpoint, inx) => {
+    await getListOfEntities(endpoint)
+  })
+  return res.status(200).send(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
  }
-
 test()
